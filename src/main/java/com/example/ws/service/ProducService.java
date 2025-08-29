@@ -34,7 +34,7 @@ public class ProducService {
 
     public Product update(long id, Product product) {
         Optional<Product> existingProduct = products.stream()
-                .filter(p -> p.getId() == id).findFirst();
+                .filter(p -> p.getId().equals(id)).findFirst();
 
         if (existingProduct.isPresent()) {
             Product productToUpdate = existingProduct.get();
