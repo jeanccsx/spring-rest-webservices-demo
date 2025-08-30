@@ -2,29 +2,36 @@ pipeline {
 agent any
 
 tools {
-maven 'mvn'
+maven 'mvn' // 👈 debe coincidir con el nombre configurado en Jenkins
 }
 
 environment {
-GIT_URL = 'https://github.com/jeanccsx/spring-rest-webservices-demo.git'
+GIT_URL = 'git@github.com:jeanccsx/spring-rest-webservices-demo.git'
 }
 
 stages {
-stage('Checkout') {
-steps {
-git branch: 'master', url: "${GIT_URL}"
-}
-}
-
 stage('Build') {
 steps {
-bat "mvn clean package -Dmaven.test.failure.ignore=true"
+git branch: "${BRANCH}",url: "${GIT_URL}"
+script {
+if (isUnix()) {
+sh "mvn -Dmaven.test.failure.ignore=true clean package"
+} else {
+bat "mvn -Dmaven.test.failure.ignore=true clean package"
+}
+}
 }
 }
 
-stage('Test') {
+stage('Integration Test') {
 steps {
-bat "mvn test"
+script {
+if (isUnix()) {
+sh "mvn -Dmaven.test.failure.ignore=true clean verify"
+} else {
+bat "mvn -Dmaven.test.failure.ignore=true clean verify"
+}
+}
 }
 }
 }
